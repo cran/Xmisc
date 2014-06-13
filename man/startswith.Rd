@@ -10,7 +10,7 @@ startswith(x, char, ignore.case = FALSE)
 
 \item{char}{character to match.}
 
-\item{ignore.case}{logical, whether to ignore cases.}
+\item{ignore.case}{logical, whether case is ignored}
 }
 \value{
 logical

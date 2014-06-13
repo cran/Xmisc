@@ -14,7 +14,13 @@ make.dir(x, mode)
 Make a directory recursively
 }
 \examples{
-try(make.dir('~/tmpdir','751'))
+\dontrun{
+if (character_to_logical(
+  raw_input("Would you like to create a directory for testing
+  at current working directory?",c('yes','no')))){
+  ## make.dir('testdir','751') # uncomment it to let R create the directory
+}
+}
 }
 \author{
 Xiaobei Zhao

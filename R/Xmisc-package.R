@@ -24,7 +24,8 @@
 ##' \item \code{\link{logme}}
 ##' \item \code{\link{lprintf}}
 ##' }
-##' 
+##'
+##' You may find the latest version of \code{Xmisc} at \url{http://cran.r-project.org/web/packages/Xmisc/index.html}.
 ##' @title Xiaobei's miscellaneous classes and functions
 ##' @name Xmisc-package
 ##' @docType package

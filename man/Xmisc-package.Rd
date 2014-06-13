@@ -15,6 +15,8 @@ Listed are a few highlighted features that may be of common interests.
 \item \code{\link{logme}}
 \item \code{\link{lprintf}}
 }
+
+You may find the latest version of \code{Xmisc} at \url{http://cran.r-project.org/web/packages/Xmisc/index.html}.
 }
 \author{
 Xiaobei Zhao

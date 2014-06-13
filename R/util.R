@@ -307,7 +307,13 @@ valid.mode <- function(mode,digits=4){
 ##' @return NULL
 ##' @author Xiaobei Zhao
 ##' @examples
-##' try(make.dir('~/tmpdir','751'))
+##' \dontrun{
+##' if (character_to_logical(
+##'   raw_input("Would you like to create a directory for testing
+##'   at current working directory?",c('yes','no')))){
+##'   ## make.dir('testdir','751') # uncomment it to let R create the directory
+##' }
+##' }
 make.dir <- function(x,mode){
   if (missing(mode)){
     mode <- '0777'
@@ -461,7 +467,7 @@ schunk <- function(x,size,brk='-',concat=TRUE)
 ##' @title Determine if a character string "starts with" specified characters
 ##' @param x character, a string.
 ##' @param char character to match.
-##' @param ignore.case logical, whether to ignore cases.
+##' @param ignore.case logical, whether case is ignored
 ##' @return logical
 ##' @author Xiaobei Zhao
 ##' @examples
@@ -484,7 +490,7 @@ startswith <-
 ##' @title Determine if a character string "ends with" specified characters
 ##' @param x character, a string
 ##' @param char character to match
-##' @param ignore.case logical, whether to ignore cases
+##' @param ignore.case logical, whether case is ignored
 ##' @return logical
 ##' @author Xiaobei Zhao
 ##' @examples
@@ -558,6 +564,70 @@ strip <- function(x,char=" "){
   gsub(sprintf("(^[%s]+)|([%s]+$)",char,char), "", x)
 }
 
+
+
+##' Convert a character string to logical. 
+##'
+##' 
+##' @title Convert a character string to logical. 
+##' @param x character
+##' @param ignore.case logical, whether case is ignored
+##' @return logical. TRUE for "y","yes","t","true" and "1";
+##' FALSE for "n","no","f","false" and "0".
+##' @author Xiaobei Zhao
+##' @examples
+##' character_to_logical("yes")
+##' try(character_to_logical("hi"))
+character_to_logical <- function(x,ignore.case=TRUE)
+{
+  if (ignore.case){
+    x <- tolower(x)
+  }
+  if (x %in% c("y","yes","t","true","1")){
+    ret <- TRUE
+  } else if (x %in% c("n","no","f","false","0")){
+    ret <- FALSE
+  } else {
+    stop(sprintf("character_to_logical | Invalid value (%s)",x))
+  }
+  return(ret)
+}
+
+##' Input from the terminal (in interactive use),
+##' confined by \code{choice} if provided.
+##' 
+##' 
+##' @title Input from the terminal (in interactive use)
+##' @param msg character, a message to input
+##' @param choice character, choices to confine the input
+##' @param strip logical, whether to strip trailing spaces
+##' @return character
+##' @author Xiaobei Zhao
+##' @examples
+##' \dontrun{
+##' raw_input("Please enter user name: ")
+##' raw_input("Please confirm",choice=c("yes","no"))
+##' }
+raw_input <- function(msg="",choice,strip=TRUE)
+{
+  msg <- strip(msg)
+  msg <- rstrip(msg,':')
+  if (missing(choice)){
+    msg <- sprintf('%s: ',msg)
+    return(readline(msg))
+  }
+  .choice <- paste(choice,sep='',collapse='/')
+  prompt <- sprintf("%s (%s): ",msg,.choice)
+  
+  .retry <- TRUE
+  while (.retry){
+    ret <- readline(prompt)
+    if (ret %in% choice){
+      .retry <- FALSE
+    }
+  }
+  ret
+}
 
 
 ## ------------------------------------------------------------------------
