@@ -1,0 +1,20 @@
+citHeader("To cite Xmisc in publications use:")
+
+citEntry(
+  entry="Manual",
+  title = "Xmisc: Xiaobei's miscellaneous classes and functions",
+  author = personList(
+    as.person("Xiaobei Zhao")
+    ),
+  year = "2014",
+  url = "http://CRAN.R-project.org/package=Xmisc",
+  note = "R package version 0.1.0",
+  textVersion = paste("
+ @Manual{,
+ title = {Xmisc: Xiaobei's miscellaneous classes and functions},
+ author = {Xiaobei Zhao},
+ year = {2014},
+ note = {R package version 0.1.0},
+ url = {http://CRAN.R-project.org/package=Xmisc},
+ }"),
+  )

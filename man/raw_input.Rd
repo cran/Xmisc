@@ -10,7 +10,7 @@ raw_input(msg = "", choice, strip = TRUE)
 
 \item{choice}{character, choices to confine the input}
 
-\item{strip}{logical, whether to strip trailing spaces}
+\item{strip}{logical, whether to strip trailing spaces of the input}
 }
 \value{
 character

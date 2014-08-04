@@ -136,6 +136,27 @@ logme <- function(x=NULL,prefix=NULL,logger=NULL,envir=sys.frame(sys.parent(0)))
 }
 
 
+
+##' Generate a diagnostic message from its arguments, with timestamp
+##'
+##' 
+##' @title Generate a diagnostic message from its arguments,
+##' with timestamp
+##' @param ... see \code{message}
+##' @param domain see \code{message}
+##' @param appendLF see \code{message}
+##' @return NULL
+##' @author Xiaobei Zhao
+##' @examples
+##' stampmsg(LETTERS)
+stampmsg <- function(..., domain=NULL, appendLF=TRUE){
+  .prefix <- format(Sys.time(), "%Y%m%d %H:%M:%S %Z")
+  message(.prefix, " | ", ..., domain=domain, appendLF=appendLF)
+  flush.console()
+  invisible()
+}
+
+
 ##' Log a `save`
 ##'
 ##' 
@@ -154,10 +175,12 @@ logsave <- function(x,logger=NULL,envir=sys.frame(sys.parent(0))){
   options(logger=as.loglevel(options()$logger))
   
   if (as.numeric(logger) <= as.numeric(options()$logger)) {
-    cat(sprintf("\nFile saved: \n%s=\"%s\"\n",atos(x,envir=envir),x))
+    message(sprintf("\nFile saved: \n%s=\"%s\"\n",atos(x,envir=envir),x))
   }
   invisible()
 }
+
+
 
 
 ## ------------------------------------------------------------------------
@@ -381,6 +404,81 @@ dfchunk <- function(x,n){
 }
 
 
+##' Sort data.frame given levels of one column 
+##'
+##' 
+##' @title Sort data.frame given levels of one column 
+##' @param x data.frame
+##' @param which.col column index or name
+##' @param levels character see \code{base::factor}
+##' @return data.frame
+##' @author Xiaobei Zhao
+##' @examples
+##' data(CO2)
+##' dfsort(CO2,"Treatment",c("nonchilled","chilled"))
+##' dfsort(CO2,3,c("chilled","nonchilled"))
+dfsort <- function(x,which.col,levels){
+  .order <- order(factor(as.character(x[,which.col]),levels=levels))
+  x[.order,] 
+}
+
+
+##' Split data.frame given one leveled column 
+##' 
+##' 
+##' @title Split data.frame given one leveled column 
+##' @param x data.frame
+##' @param which.col column index or name
+##' @param levels character see \code{base::factor}
+##' @return named list
+##' @author Xiaobei Zhao
+##' @examples
+##' x <- read.table(textConnection("
+##' chr1  0   100
+##' chr2  100 200
+##' chr10 200 300
+##' "),col.names=c('chr','start','end'))
+##' 
+##' ## compare the results by base::split and dfsplit
+##' split(x,f=x[,'chr'])
+##' ## $chr1
+##' ##    chr start end
+##' ## 1 chr1     0 100
+##' 
+##' ## $chr10
+##' ##     chr start end
+##' ## 3 chr10   200 300
+##' 
+##' ## $chr2
+##' ##    chr start end
+##' ## 2 chr2   100 200
+##' 
+##' dfsplit(x,'chr',c('chr1','chr2','chr10'))
+##' ## $chr1
+##' ##    chr start end
+##' ## 1 chr1     0 100
+##' 
+##' ## $chr2
+##' ##    chr start end
+##' ## 2 chr2   100 200
+##' 
+##' ## $chr10
+##' ##     chr start end
+##' ## 3 chr10   200 300
+##' 
+dfsplit <- function(x,which.col,levels){
+  .x <- split(x,f=x[,which.col])
+  .order <- order(factor(as.character(names(.x)),levels=levels))
+  .x[.order]
+}
+
+
+## ------------------------------------------------------------------------
+## data.table
+## ------------------------------------------------------------------------
+
+
+
 ## ------------------------------------------------------------------------
 ## vector
 ## ------------------------------------------------------------------------
@@ -416,6 +514,49 @@ vchunk <- function(x,n=NULL,max.size=NULL,aeap=TRUE){
   }
   split(x, ceiling(seq_along(x)/size))
 }
+
+
+##' Concatenate vector into a string
+##' 
+##'
+##' @title Concatenate vector into a string
+##' @param x vector
+##' @param sep character, a delimiter
+##' @param capsule logical, weather to capsule with `c()'
+##' @param quote logical, weather to surround elements by double quotes.
+##' @return vector
+##' @author Xiaobei Zhao
+##' @examples
+##' cat(vconcat(head(letters),capsule=TRUE,quote=TRUE),'\n')
+##' ## c("a", "b", "c", "d", "e", "f")
+##' 
+##' cat(vconcat(head(letters),sep='-'),'\n')
+##' ## a-b-c-d-e-f
+##' 
+vconcat <- function(x,sep=", ",capsule=FALSE,quote=FALSE){
+  if (! is.vector(x)){
+    stop('x must be a vector')
+  }
+  .flag <- is.character(x)
+  if (quote & !.flag){
+    warning('Surround non-character elements by double quotes. Try quote=TRUE.')
+  }
+  .x <- as.character(x)
+  if (quote){
+    .collapse <- lprintf('"%(sep)s"')
+  } else {
+    .collapse <- lprintf('%(sep)s')    
+  }
+  ret <- paste(.x,sep='',collapse=.collapse)
+  if (quote){
+    ret <- paste('"',ret,'"',sep='')    
+  }
+  if (capsule){
+    ret <- lprintf('c(%(ret)s)')
+  }
+  return(ret)
+}
+
 
 
 ## ------------------------------------------------------------------------
@@ -600,7 +741,7 @@ character_to_logical <- function(x,ignore.case=TRUE)
 ##' @title Input from the terminal (in interactive use)
 ##' @param msg character, a message to input
 ##' @param choice character, choices to confine the input
-##' @param strip logical, whether to strip trailing spaces
+##' @param strip logical, whether to strip trailing spaces of the input
 ##' @return character
 ##' @author Xiaobei Zhao
 ##' @examples
