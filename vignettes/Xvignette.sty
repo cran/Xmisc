@@ -1,0 +1,472 @@
+
+
+\usepackage{bioinfo}
+
+%% ------------------------------------------------------------------------
+%% appendix
+%% ------------------------------------------------------------------------
+
+\usepackage[titletoc]{appendix}
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\usepackage{bookmark}
+\bookmarksetup{
+  numbered, 
+  open,
+}
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=magenta, urlcolor=blue, citecolor=black}
+\urlstyle{same}
+
+\usepackage{color}
+\usepackage{caption}
+\captionsetup{margin=0pt,indention=0pt,parindent=0pt,font=small,textfont=default,labelfont=bf,singlelinecheck=off,justification=raggedright}
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+\usepackage{boxedminipage}
+\usepackage{etoolbox}
+
+\makeatletter
+\patchcmd{\FV@ListVSpace}{\@topsepadd\topsep}{}{}
+\makeatother
+
+
+%% Sweave
+\usepackage[noae]{Sweave}
+\definecolor{Snote}{rgb}{0,0,0}
+\definecolor{Scode}{rgb}{0,0,0.56}
+\definecolor{Sinput}{rgb}{0,0,0}
+\definecolor{Soutput}{rgb}{0,0,0}
+\definecolor{gray}{rgb}{0.80,0.80,0.80}
+\renewenvironment{Schunk}{\par\begin{minipage}{\textwidth}}{\end{minipage}}
+\DefineVerbatimEnvironment{Snote}{Verbatim}{formatcom={\color{Snote}},fontsize=\tiny}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{formatcom={\color{Scode}},fontsize=\small} 
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{formatcom={\color{Sinput}},fontsize=\scriptsize,baselinestretch=1}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{formatcom={\color{Soutput}},fontsize=\scriptsize,baselinestretch=1,numbers=none}
+
+
+\setlength{\parskip}{2ex}
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+%% slow
+%% \newcommand{\inlinecolorbox}[2][gray]{\setlength{\fboxsep}{0pt}\colorbox{#1}{#2}}
+
+
+%% ------------------------------------------------------------------------
+%% file/path
+%% http://tex.stackexchange.com/questions/65345/extracting-the-basename-from-a-filepath-argument
+%% ------------------------------------------------------------------------
+
+\makeatletter
+\newcommand\filebase[1]{%
+  \filename@parse{#1}%
+  \filename@base%
+}
+\makeatother
+
+\makeatletter
+\newcommand\fileext[1]{%
+  \filename@parse{#1}%
+  \filename@ext%
+}
+\makeatother
+
+\newcommand\basename[1]{%
+  \def\x{\filebase{#1}}%
+  \def\y{\fileext{#1}}%
+  \x{}{.}\y{}% still an space in between??
+}
+
+
+%% ------------------------------------------------------------------------
+%% figure
+%% ------------------------------------------------------------------------
+
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{subfigure}
+\graphicspath{{./} {./fig/} {../fig/}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.bmp,.eps}
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+\newcommand{\strong}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\let\pkg=\strong
+
+\newcommand{\quotes}[1]{``#1''}
+\newcommand{\software}[1]{\textsl{#1}}
+\newcommand{\code}[1]{\texttt{\nolinkurl{#1}}}
+
+\newcommand{\keywords}[1]{\textbf{Keywords: }#1}
+\newcommand{\eg}{\textit{e.g.}}
+\newcommand{\ie}{\textit{i.e.}}
+
+\usepackage{lscape}                    % pdflscape.
+\usepackage{listings}
+
+
+% \usepackage{ucs} %% needed for R output: signif stars etc, quotes
+
+\usepackage[T1]{fontenc}
+% \usepackage[utf8]{inputenc}
+% \usepackage[utf8x]{inputenc}
+
+
+% \usepackage{sidecap}
+% \usepackage{amsmath}
+
+\renewcommand{\floatpagefraction}{0.8}
+
+
+%% firstnumber=#1,numbers=left
+
+% % letter
+\oddsidemargin3mm
+\evensidemargin3mm
+\topmargin-12mm
+\headheight12pt
+\textwidth168mm
+\textheight224mm
+
+
+% % % % a4paper
+% % \oddsidemargin3mm
+% % \evensidemargin3mm
+% % \topmargin-12mm
+% % \headheight12pt
+% % \textwidth166mm %-6mm
+% % \textheight228mm %+8mm
+
+
+%\parindent0pt
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}%
+                {\z@}{1.5ex \@plus 1ex \@minus .2ex}{-1em}%
+                {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+
+
+
+%% filename, caption
+%% Code Chunk
+\newcommand\refsource{Source Code}
+
+%% newenvironment for self-numbering
+\newcounter{sourcecounter}
+
+%%\renewcommand{\thesourcecounter}[1]{\arabic{sourcecounter}} %%DONOT|! Paragraph ended before \thesourcecounter was complete.
+
+\newenvironment{source}{
+  \refstepcounter{sourcecounter}%
+  \begin{center}
+}{
+  \end{center}
+}
+
+
+\newcommand{\vignetteSource}[2]{
+  \def\Fpath{#1}
+  \def\argtwo{#2}
+  \def\empty{}
+
+  \ifx \argtwo \empty
+  %%\def\Fname{\basename{\Fpath}} %%DONOT
+  \def\Fname{\Fpath}
+  \else
+  \def\Fname{\argtwo}  
+  \fi
+    
+  \ifx \Fname \empty
+  \def\scaption{Source code of ``\Fpath''.}
+  \else
+  \def\scaption{\Fname}
+  \fi
+  
+  \begin{source}
+    \VerbatimInput[numbers=left,
+      frame=single,
+      label=\scaption]{\Fpath}
+    %\caption{\scaption}
+    \label{src:\Fname}
+  \end{source}
+}
+
+
+\newcommand{\vignetteFigure}[5]{%
+  \def\Fname{#1}%
+  \def\argtwo{#2}%caption
+  \def\argthree{#3}%width
+  \def\argfour{#4}%page
+  \def\argfive{#5}%source (code)
+  %
+  \def\empty{}%
+  %
+  \ifx \argthree \empty%
+  \def\argthree{0.75}%
+  \fi%
+  %
+  \ifx \argfive \empty%
+  \def\sargfive{}%
+  \else%
+  \def\sargfive{\ of ``\argfive''}%
+  \fi%
+  %
+  \ifx \argfour \empty%
+  \def\argfour{1}%
+  \fi%
+  %
+  \ifx \argtwo \empty%
+  %%\def\scaption{Graphical output \argfour \sargfive.}
+  \def\scaption{Graphical output \sargfive.}%
+  \else
+  \def\scaption{\argtwo}%
+  \fi%
+  %
+  %%\begin{figure}[H] 
+  \begin{figure}[!ht]%
+    \centering%
+    \includegraphics[angle=0,%
+      width=\argthree\textwidth,%
+      page=\argfour]{\Fname}%
+    \caption{\scaption}%
+    \label{src:\Fname}%
+  \end{figure}%
+}
+
+
+%% \begin{figure}
+%%   \hfill
+%%   \subfigure[Title A]{\includegraphics[width=0.33]{img1}}
+%%   \hfill
+%%   \subfigure[Title B]{\includegraphics[width=0.33]{img2}}
+%%   \hfill
+%%   \caption{Title for both}
+%% \end{figure}
+
+
+\newenvironment{vignetteDynFigure}[1]{
+  \def\arg{#1}
+  \par\begin{figure}[!h] 
+  \centering
+}{
+  \caption{Graphical output of \arg.}
+  \label{fig:\arg}
+  \end{figure}
+  \clearpage
+}
+
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+      \vskip0.5em}%
+}
+
+
+\usepackage{authblk}
+
+\newcommand{\binf}{Bioinformatics Centre, University of Copenhagen, Department of Biology and Biotech Research and Innovation Centre, Ole Maal\o es Vej 5, DK-2200, Copenhagen, Denmark.}
+\newcommand{\lccc}{Lineberger Comprehensive Cancer Center, University of North Carolina at Chapel Hill, 450 West Dr, Chapel Hill, NC 27599, USA.}
+
+%% ------------------------------------------------------------------------
+%% abstract
+%% http://tex.stackexchange.com/questions/151583/how-to-adjust-the-width-of-abstract
+%% http://tex.stackexchange.com/questions/100696/new-environment-with-center-and-parsep
+%% ------------------------------------------------------------------------
+
+\renewenvironment{abstract}{\small
+  \begin{center}
+    \bfseries \abstractname\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{%
+    \setlength{\leftmargin}{0mm}% <---------- CHANGE HERE
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+\item\relax}{\endlist}
+
+
+\newenvironment{xparagraph}[1][\the\parsep]{
+  \list{}{%
+    \setlength{\parsep}{#1}%
+    \setlength{\leftmargin}{0pt}%
+    \setlength{\rightmargin}{\leftmargin}%
+    \setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}%
+  }\centering\item\relax
+}{
+  \endlist
+}
+
+
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\usepackage{fancyhdr}
+
+
+%% ------------------------------------------------------------------------
+%% email
+%% ------------------------------------------------------------------------
+
+
+\newcommand\mybinfemail{\nolinkurl{xiaobei@binf.ku.dk}}
+%% \newcommand{\mybinfemail}{\href{mailto:xiaobei@binf.ku.dk}{\nolinkurl{xiaobei@binf.ku.dk}}}
+\newcommand\myemail{\mybinfemail{}}
+
+
+\newcommand\emailme[2][xiaobei@binf.ku.dk]{% DONOT use \myemail as defult, 
+  % default by a direct value
+  \def\to{#1}%
+  \def\subject{#2}%
+  \href{mailto:\to?subject=[\subject]}{\to}% 
+}
+
+
+
+%% ------------------------------------------------------------------------
+%% datetime
+%% ------------------------------------------------------------------------
+
+\usepackage{datetime}
+\newdateformat{mydate}{\THEYEAR-\THEMONTH-\THEDAY}
+
+
+%% ------------------------------------------------------------------------
+%% currversion/currdate
+%% NOT WORK; should assign #1 directly!
+%% DO NOT change a bit, including quotes ('/")
+%% ------------------------------------------------------------------------
+
+%% %% \newcommand{\currversion}[1]{%
+%% %% <<echo=FALSE,eval=TRUE,results=tex>>=%
+%% %%   cat(as.character(packageVersion('#1')))
+%% %% @%
+%% %% }
+
+%% %% \newcommand{\currdate}[1]{%
+%% %% <<echo=FALSE,eval=TRUE,results=tex>>=%
+%% %%   cat(unlist(strsplit(packageDescription('#1')[['Date']],' '))[1])
+%% %% @%
+%% %% }
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\newcommand\CRAN{\software{CRAN}}
+\newcommand\Bioconductor{\software{Bioconductor}}
+\newcommand\R{\software{R}}
+\newcommand\zhao{\software{Zhao, Xiaobei}}
+\newcommand\zhaoetal{\software{Zhao et al}}
+
+\newcommand{\refface}[1]{\textbf{#1}}
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\newcommand{\FALSE}{\texttt{FALSE}}
+\newcommand{\TRUE}{\texttt{TRUE}}
+
+
+%% ------------------------------------------------------------------------
+%% Review
+%% ------------------------------------------------------------------------
+
+%%\newcommand{\XB}[1]{{\color{red} #1}}%
+\newcommand{\XB}[1]{{#1}}%
+
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+% % e.g.
+% % \vignetteSource{case-nottem.R}{}
+% % <<a>>=
+% % source(file="case-nottem.R")
+% % @
+
+% % \begin{vignetteFigure}{case-nottem.R}
+% % <<echo=FALSE,results=hide,fig=TRUE>>=
+% % <<a>>
+% % @
+% % \end{vignetteFigure}
+
+
+
+% \newcommand{texFigure}[3]{
+%   \def\arg{#1}
+%   \def\argg{#2}
+%   \def\arggg{#3}
+%   \begin{figure}[!h] 
+%     \centering 
+%     \includegraphics[angle=0, width=\argg\textwidth]{\arg}
+%     \caption{Graphical output of \arggg.}
+%     \label{fig:\arggg}
+%   \end{figure}
+%   \clearpage
+% }
+
+
+
+
+
+% % \begin{figure}[!h] %#1=ht
+% %   \centering 
+% %   \includegraphics[angle=0, width=0.95\textwidth]{case-iris}
+% %   \caption{Histograms of iris sepal width}
+% %   \label{fig:case-iris}
+% % \end{figure}
+% % \clearpage % Better use FloatBarrier here
+
+
+
+% % \begin{figure}[!h] %#1=ht
+% %   \centering 
+% %   \includegraphics[angle=0, width=0.95\textwidth]{case-iris}
+% %   \caption{Histograms of iris sepal width}
+% %   \label{fig:case-iris}
+% % \end{figure}
+% % \clearpage % Better use FloatBarrier here
+
+
+%% ========================================================================
+%% 
+%% ========================================================================
+
+% %\documentclass[letterpaper]{article} %8.5 by 11 inches (215.9 mm by 279.4 mm) 
+% %\documentclass[a4paper]{article} %8.267 by 11.692 inches (210 mm by 297 mm)

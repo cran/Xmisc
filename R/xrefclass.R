@@ -35,6 +35,7 @@
 ##' @field .tmp.list list for temporary storage
 ##' @field .out.list list for outputting
 ##' @examples
+##' \dontrun{
 ##' MyClass <- 
 ##'   setRefClass(
 ##'     "MyClass",
@@ -102,6 +103,7 @@
 ##' obj$update("printme") # update the function
 ##' obj$printme() # The function is modified
 ##' ## Hello R!
+##' }
 ##' @seealso \code{methods::ReferenceClasses}
 ##' @exportClass xRefClass
 xRefClass <- 
@@ -113,7 +115,7 @@ xRefClass <-
       .meta='list',
       .envir='environment',
       .lib=function(){
-        tolower(as.character(.self$getdef()@className))
+        tolower(as.character(.self$get_def()@className))
       },
       .class=function(){
         as.character(class(.self))[1]
@@ -133,7 +135,7 @@ xRefClass <-
         .args <- List$new(...)
         ## logme(.args,'xRefClass | initialize','DEBUG') ##
         
-        .field.classes <- getfieldclasses()
+        .field.classes <- get_fieldclasses()
         .names <- names(.field.classes)
         if (".index" %in% .names){
           .field.classes <- c(
@@ -202,27 +204,27 @@ xRefClass <-
       },
       setme=function(){        
       },
-      getenvir=function(){
+      get_envir=function(){
         .envir
       },
-      getdef=function(){
-        ## logme('START','xRefClass | getdef','DEBUG') ##
+      get_def=function(){
+        ## logme('START','xRefClass | get_def','DEBUG') ##
         .def <- .refClassDef
-        ## logme('END','xRefClass | getdef','DEBUG') ##
+        ## logme('END','xRefClass | get_def','DEBUG') ##
         return(.def)
       },
-      getfieldclasses=function(){
-        ## logme('START','xRefClass | getfieldclasses','DEBUG') ##
-        .def <- getdef()
+      get_fieldclasses=function(){
+        ## logme('START','xRefClass | get_fieldclasses','DEBUG') ##
+        .def <- get_def()
         .field.classes <- .def@fieldClasses
-        ## logme('END','xRefClass | getfieldclasses','DEBUG') ##
+        ## logme('END','xRefClass | get_fieldclasses','DEBUG') ##
         return(.field.classes)
       },
       copy2=function(shallow=FALSE){
         'Modified version of `copy\' to allow `activeBindingFunction\' as fields.
 '
-        .def <- getdef()
-        .field.classes <- getfieldclasses()
+        .def <- get_def()
+        .field.classes <- get_fieldclasses()
         .fields <- names(.field.classes)
         .new <- new(.def)
         .new.env <- as.environment(.new)

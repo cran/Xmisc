@@ -18,6 +18,24 @@
 ## print and log
 ## ------------------------------------------------------------------------
 
+##' Cat without space but with a newline at the end by default
+##'
+##' 
+##' @title Cat without space but with a newline at the end
+##' @param ... see \code{cat}
+##' @param file see \code{cat}
+##' @param sep see \code{cat}
+##' @param fill see \code{cat}
+##' @param labels see \code{cat}
+##' @param append see \code{cat}
+##' @return see \code{cat}
+##' @author Xiaobei Zhao
+cat0 <- function(...,file="",sep="",fill=FALSE,labels=NULL,append=FALSE)
+{
+  cat(...,'\n',file=file,sep=sep,fill=fill,labels=labels,append=append)
+}
+
+
 ##' Print the name and the content of an R object
 ##'
 ##' 
@@ -113,7 +131,7 @@ stampme <- function(x){
 ##'
 ##' ## log according to logger levels
 ##' bar <- function(x,envir=sys.frame(sys.parent(0))){
-##'   for (.logger in get.loglevel()) {
+##'   for (.logger in get_loglevel()) {
 ##'     if (is.null(.logger)) .prefix <- 'NULL' else .prefix <- .logger
 ##'     logme(x,prefix=.prefix,logger=.logger,envir=envir)
 ##'   }
@@ -232,6 +250,27 @@ is.windows <- function(){as.character(Sys.info()['sysname'])=='Windows'}
 ##' @return logical 
 ##' @author Xiaobei Zhao
 is.linux <- function(){as.character(Sys.info()['sysname'])=='Linux'}
+
+
+
+## ------------------------------------------------------------------------
+## connection
+## ------------------------------------------------------------------------
+
+
+
+##' Is a connection
+##'
+##' 
+##' @title Is a connection
+##' @param x R object
+##' @return logical
+##' @author Xiaobei Zhao
+##' @examples
+##' is.connection(textConnection(LETTERS))
+is.connection <- function(x){
+  'connection' %in% class(x)
+}
 
 
 ## ------------------------------------------------------------------------
@@ -391,14 +430,17 @@ dfconcat <- function(x,sep=" ",...){
 ##' @title Chunk data.frame into parts
 ##' @param x data.frame or matrix
 ##' @param n numeric, the number of chunks
+##' @param balance.size logical, see \code{vchunk}
+##' @param balance.order logical, see \code{vchunk}
 ##' @return a list of data.frame
 ##' @author Xiaobei Zhao
 ##' @examples
 ##' dfchunk(iris,n=5)
-##' dfchunk(iris[1:5,],n=5)
-dfchunk <- function(x,n){
+##' dfchunk(iris[1:20,],n=3)
+##' dfchunk(iris[1:20,],n=3,balance.order=TRUE)
+dfchunk <- function(x,n,balance.size=TRUE,balance.order=FALSE){
   x <- as.data.frame(x)
-  v_rows <- vchunk(seq(nrow(x)),n)
+  v_rows <- vchunk(seq(nrow(x)),n,balance.size=balance.size,balance.order=balance.order)
   ret <- sapply(v_rows,function(e){x[e,]}, simplify=FALSE)
   return(ret)
 }
@@ -467,6 +509,7 @@ dfsort <- function(x,which.col,levels){
 ##' ## 3 chr10   200 300
 ##' 
 dfsplit <- function(x,which.col,levels){
+  x <- as.data.frame(x)
   .x <- split(x,f=x[,which.col])
   .order <- order(factor(as.character(names(.x)),levels=levels))
   .x[.order]
@@ -491,28 +534,49 @@ dfsplit <- function(x,which.col,levels){
 ##' @param x vector to chunk
 ##' @param n numeric, the number of chunks
 ##' @param max.size numeric, the maximal size of a chunk
-##' @param aeap logical, as equal as possible. Whether return balanced chunks.
+##' @param balance.size logical, as equal as possible. Whether return balanced chunks.
+##' @param balance.order logical, whether to balance the elements.
+##' Force balance.size to be TRUE.
+##' given their original orders.
 ##' @return list
 ##' @author Xiaobei Zhao
 ##' @examples
 ##' vchunk(1:7,7)
 ##' vchunk(1:19,n=3)
-##' vchunk(1:19,max.size=9)
-##' vchunk(1:19,max.size=9,aeap=FALSE) # unbalanced chunks
-vchunk <- function(x,n=NULL,max.size=NULL,aeap=TRUE){
-  'section a vector into groups no larger than max.size
-@param aeap as equal as possible'
+##' vchunk(1:19,max.size=9) # size-balanced
+##' vchunk(1:19,max.size=9,balance.size=FALSE) # size/order-unbalanced
+##' vchunk(1:19,max.size=9,balance.size=FALSE,balance.order=TRUE) # order-balanced
+##' vchunk(1:19,max.size=9,balance.order=TRUE) # size/order-balanced
+vchunk <- function(x,n=NULL,max.size=NULL,balance.size=TRUE,balance.order=FALSE){
+  ## section a vector into groups no larger than max.size
+  ## @param balance.size as equal as possible
+  ## [2014-08-06] replace aeap with balance.size and made it more balanced.
   if (!is.null(n)){
     max.size <- ceiling(length(x)/n) 
-  }
-  
-  if (aeap){
+  }  
+  if (balance.size){
     n <- ceiling(length(x)/max.size)
     size <- ceiling(length(x)/n)
   } else {
     size <- max.size
+    n <- ceiling(length(x)/size)
   }
-  split(x, ceiling(seq_along(x)/size))
+
+  if (!balance.size) {
+    .chunk <- ceiling(seq_along(x)/size)
+    if (balance.order) {
+      .chunk <- .chunk[order(unlist(lapply(split(.chunk,.chunk),order)))]
+    }
+  } else{
+    .mod <- ceiling(seq_along(x)%%n)
+    .chunk <- .mod
+    .chunk[.chunk==0] <- n
+    if (!balance.order) {
+      .chunk <- sort(.chunk)
+    }
+  }
+  ret <- split(x, .chunk)
+  return(ret)
 }
 
 
@@ -539,20 +603,20 @@ vconcat <- function(x,sep=", ",capsule=FALSE,quote=FALSE){
   }
   .flag <- is.character(x)
   if (quote & !.flag){
-    warning('Surround non-character elements by double quotes. Try quote=TRUE.')
+    warning('Surround non-character elements by double quotes. Try quote=FALSE.')
   }
   .x <- as.character(x)
   if (quote){
-    .collapse <- lprintf('"%(sep)s"')
+    .collapse <- sprintf('"%s"',sep)
   } else {
-    .collapse <- lprintf('%(sep)s')    
+    .collapse <- sep
   }
   ret <- paste(.x,sep='',collapse=.collapse)
   if (quote){
     ret <- paste('"',ret,'"',sep='')    
   }
   if (capsule){
-    ret <- lprintf('c(%(ret)s)')
+    ret <- sprintf('c(%s)',ret)
   }
   return(ret)
 }
@@ -563,6 +627,21 @@ vconcat <- function(x,sep=", ",capsule=FALSE,quote=FALSE){
 ## string
 ## ------------------------------------------------------------------------
 
+##' Replicate and concatenate a string
+##'
+##' 
+##' @title Replicate and concatenate a string
+##' @param x See \code{rep}
+##' @param ... See \code{rep}
+##' @return character
+##' @author Xiaobei Zhao
+##' @examples
+##' srep("*",5)
+srep <- function(x,...){
+  ret <- rep(x,...)
+  paste(ret,sep='',collapse='')
+}
+
 ##' Chunk a string into parts
 ##'
 ##' 
@@ -570,12 +649,16 @@ vconcat <- function(x,sep=", ",capsule=FALSE,quote=FALSE){
 ##' @param x character, a string to chunk.
 ##' @param size numeric, the size of a chunk.
 ##' @param brk character to link broken words.
+##' @param indent.width1 numeric, indent of the first line
+##' @param indent.width numeric, indent of the other lines
 ##' @param concat logical, whether to concatenate by a `newline`
 ##' @return character
 ##' @author Xiaobei Zhao
 ##' @examples
 ##' x <- 'The quick brown fox jumps over the lazy dog.'
 ##' cat(schunk(x,15),'\n')
+##' cat(schunk(x,15,indent.width1=4),'\n') # indent all lines
+##' cat(schunk(x,15,indent.width=4),'\n')  # indent lines other than the first
 ##' x <- 'The word, honorificabilitudinita, occurs in Shakespeare\'s
 ##' play Love\'s Labour\'s Lost, and means "with honorablenesses".'
 ##' cat(schunk(x,30),'\n')
@@ -584,7 +667,7 @@ vconcat <- function(x,sep=", ",capsule=FALSE,quote=FALSE){
 ##' ## play Love's Labour's Lost, and
 ##' ##  means "with honorablenesses".
 ##' 
-schunk <- function(x,size,brk='-',concat=TRUE)
+schunk <- function(x,size,brk='-',indent.width1=0,indent.width=indent.width1,concat=TRUE)
 {
   tmp <- strsplit(x,sprintf("(?<=.{%s})",size), perl = TRUE)[[1]]
   for (i in seq_along(tmp)){
@@ -594,6 +677,8 @@ schunk <- function(x,size,brk='-',concat=TRUE)
       }
     }
   }
+  tmp[1] <- paste(srep(" ",indent.width1),tmp[1],sep='')
+  tmp[-1] <- paste(srep(" ",indent.width),tmp[-1],sep='')
   if (concat){
     tmp <- paste(tmp,sep='',collapse='\n')
   }
@@ -831,15 +916,14 @@ lprintf <- function(x,envir=sys.frame(sys.parent(1))){
     })
   }
   ## match
-  ## require(stringr)
-  ## stringr::str_match_all
-  require(stringr)
-  .m <- stringr::str_match_all(x,'\\%\\(([^()]+)\\)([a-z])')[[1]]
+  .p <- '\\%\\(([^()]+)\\)([a-z])'
+  .m <- .str_match_all(x,.p)[[1]] #stringr::str_match_all
   for (i in seq(nrow(.m))){
     x <- .fmt(x,envir,.m[i,1],.m[i,2],.m[i,3])
   }
   x
 }
+
 
 
 ##' Convert an R object to a string
@@ -858,6 +942,50 @@ atos <- function(x,envir=sys.frame(sys.parent(0))){
 ## ------------------------------------------------------------------------
 ## packages
 ## ------------------------------------------------------------------------
+
+##' Get the executable file path of a package 
+##'
+##' 
+##' @title Get the executable file path of a package 
+##' @param pkg character, the name of a package
+##' @param name character, the name of the executable file
+##' @param dir character, the directory in the package hierarchy
+##' @param mustWork See \code{system.file}
+##' @return character, the executable file path
+##' @author Xiaobei Zhao
+##' @examples
+##' \dontrun{
+##' try(get_executable('Xmisc','Xmisc-argumentparser.R'))
+##' }
+get_executable <- function(
+  pkg,name=tolower(pkg),dir='bin',mustWork=TRUE
+  )
+{
+  system.file(dir,name,package=pkg,mustWork=mustWork)
+}
+
+##' Get the extdata file path of a package 
+##'
+##' 
+##' @title Get the extdata file path of a package 
+##' @param pkg character, the name of a package
+##' @param name character, the name of the extdata file
+##' @param dir character, the directory in the package hierarchy
+##' @param mustWork See \code{system.file}
+##' @return character, the extdata file path
+##' @author Xiaobei Zhao
+##' @examples
+##' \dontrun{
+##' try(get_extdata('datasets','morley.tab','data'))
+##' }
+get_extdata <- function(  
+  pkg,name,dir='extdata',mustWork=TRUE
+  )
+{
+  system.file(dir,name,package=pkg,mustWork=mustWork)  
+}
+
+
 
 ##' Check if a package is loaded
 ##'
@@ -919,3 +1047,30 @@ check.packages <-
       )
   ret
 }
+
+
+## ------------------------------------------------------------------------
+## function
+## ------------------------------------------------------------------------
+
+
+##' Funciton with attributes (name, package)
+##'
+##' 
+##' @title Funciton with attributes
+##' @param x function
+##' @param name character, the function name
+##' @param package character, where the function is from
+##' @return named funciton
+##' @author Xiaobei Zhao
+##' @examples
+##' \dontrun{
+##' func(lm,'lm','stats')
+##' }
+func <- function(x,name,package){
+  ret <- x
+  attr(ret,'name') <- name
+  attr(ret,'package') <- package
+  return(ret)
+}
+

@@ -30,10 +30,10 @@ List <- setRefClass(
     initialize=function(...){
       data <<- list(...)
     },
-    getnames=function(){
+    get_names=function(){
       base::names(data)
     },
-    getdata=function(){
+    get_data=function(){
       data
     },
     as.list=function(){
@@ -74,7 +74,7 @@ List <- setRefClass(
       if (missing(type)){
         type <- 'ANY'
       }
-      ret <- ValueParser$new(value=.value,type=type)$getvalue()   
+      ret <- ValueParser$new(value=.value,type=type)$get_value()   
       ## logme(ret,"List | getone",log='DEBUG')
 
       return(ret)

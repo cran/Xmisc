@@ -1,0 +1,222 @@
+
+% ********************
+% Figures and tables *
+% ********************
+
+
+\long\def\@makecaption#1#2{\vspace{\abovecaptionskip}%
+  \begingroup
+  \footnotesize
+  \textbf{#1.}\enskip{#2}\par
+  \endgroup}
+
+\long\def\@tablecaption#1#2{%
+  \begingroup
+  \footnotesize
+  \textbf{#1.}\enskip{#2\strut\par}
+  \endgroup\vspace{\belowcaptionskip}}
+
+% Table rules
+\def\toprule{\noalign{\ifnum0=`}\fi\hrule \@height 0.5pt \hrule \@height 6pt \@width 0pt \futurelet
+   \@tempa\@xhline}
+\def\midrule{\noalign{\ifnum0=`}\fi \hrule \@height 6.75pt \@width 0pt \hrule \@height 0.5pt
+    \hrule \@height 6pt \@width 0pt \futurelet \@tempa\@xhline}
+\def\botrule{\noalign{\ifnum0=`}\fi \hrule \@height 5.75pt \@width 0pt \hrule \@height 0.5pt \futurelet
+   \@tempa\@xhline}
+\def\hrulefill{\leavevmode\leaders\hrule height .5pt\hfill\kern\z@}
+
+\def\thefigure{\@arabic\c@figure}
+\def\fps@figure{tbp}
+\def\ftype@figure{1}
+\def\ext@figure{lof}
+\def\fnum@figure{\figurename~\thefigure}
+\def\figure{\@float{figure}}
+\let\endfigure\end@float
+\@namedef{figure*}{\@dblfloat{figure}}
+\@namedef{endfigure*}{\end@dblfloat}
+\def\thetable{\@arabic\c@table}
+\def\fps@table{tbp}
+\def\ftype@table{2}
+\def\ext@table{lot}
+\def\fnum@table{Table~\thetable}
+\def\table{\let\@makecaption\@tablecaption\let\source\tablesource\@float{table}}
+\def\endtable{\end@float}
+\@namedef{table*}{\let\@makecaption\@tablecaption\@dblfloat{table}}
+\@namedef{endtable*}{\end@dblfloat}
+
+\newif\if@rotate \@rotatefalse
+\newif\if@rotatecenter \@rotatecenterfalse
+\def\rotatecenter{\global\@rotatecentertrue}
+\def\rotateendcenter{\global\@rotatecenterfalse}
+\def\rotate{\global\@rotatetrue}
+\def\endrotate{\global\@rotatefalse}
+\newdimen\rotdimen
+\def\rotstart#1{\special{ps: gsave currentpoint currentpoint translate
+    #1 neg exch neg exch translate}}
+\def\rotfinish{\special{ps: currentpoint grestore moveto}}
+\def\rotl#1{\rotdimen=\ht#1\advance\rotdimen by \dp#1
+    \hbox to \rotdimen{\vbox to\wd#1{\vskip \wd#1
+    \rotstart{270 rotate}\box #1\vss}\hss}\rotfinish}
+\def\rotr#1{\rotdimen=\ht #1\advance\rotdimen by \dp#1
+    \hbox to \rotdimen{\vbox to \wd#1{\vskip \wd#1
+    \rotstart{90 rotate}\box #1\vss}\hss}\rotfinish}
+
+\newdimen\tempdime
+\newbox\temptbox
+
+% From ifmtarg.sty
+% Copyright Peter Wilson and Donald Arseneau, 2000
+\begingroup
+\catcode`\Q=3
+\long\gdef\@ifmtarg#1{\@xifmtarg#1QQ\@secondoftwo\@firstoftwo\@nil}
+\long\gdef\@xifmtarg#1#2Q#3#4#5\@nil{#4}
+\long\gdef\@ifnotmtarg#1{\@xifmtarg#1QQ\@firstofone\@gobble\@nil}
+\endgroup
+
+\def\tablesize{\@setfontsize\tablesize{8\p@}{10\p@}}
+
+\newenvironment{processtable}[3]{\setbox\temptbox=\hbox{{\tablesize #2}}%
+\tempdime\wd\temptbox\@processtable{#1}{#2}{#3}{\tempdime}}
+{\relax}
+
+\newcommand{\@processtable}[4]{%
+\if@rotate
+\setbox4=\vbox to \hsize{\vss\hbox to \textheight{%
+\begin{minipage}{#4}%
+\@ifmtarg{#1}{}{\caption{#1}}{\tablesize #2}%
+\vskip7\p@\noindent
+\parbox{#4}{\fontsize{7}{9}\selectfont #3\par}%
+\end{minipage}}\vss}%
+\rotr{4}
+\else
+\hbox to \hsize{\hss\begin{minipage}[t]{#4}%
+\vskip2.9pt
+\@ifmtarg{#1}{}{\caption{#1}}{\tablesize #2}%
+\vskip6\p@\noindent
+\parbox{#4}{\fontsize{7}{9}\selectfont #3\par}%
+\end{minipage}\hss}\fi}%
+
+%%\newcolumntype{P}[1]{>{\raggedright\let\\\@arraycr\hangindent1em}p{#1}}
+
+% ******************************
+% List numbering and lettering *
+% ******************************
+\def\labelenumi{{\rm\arabic{enumi}.}}
+\def\theenumi{\arabic{enumi}}
+\def\labelenumii{{\rm\alph{enumii}.}}
+\def\theenumii{\alph{enumii}}
+\def\p@enumii{\theenumi}
+\def\labelenumiii{{\rm(\arabic{enumiii})}}
+\def\theenumiii{\roman{enumiii}}
+\def\p@enumiii{\theenumi(\theenumii)}
+\def\labelenumiv{{\rm(\arabic{enumiv})}}
+\def\theenumiv{\Alph{enumiv}}
+\def\p@enumiv{\p@enumiii\theenumiii}
+\def\labelitemi{{\small$\bullet$}}
+\def\labelitemii{{\small$\bullet$}}
+\def\labelitemiii{{\small$\bullet$}}
+\def\labelitemiv{{\small$\bullet$}}
+
+\def\@listI{\leftmargin\leftmargini \topsep\medskipamount}
+\let\@listi\@listI
+\@listi
+\def\@listii{\topsep\z@\leftmargin\leftmarginii}
+\def\@listiii{\leftmargin\leftmarginiii \topsep\z@}
+\def\@listiv{\leftmargin\leftmarginiv \topsep\z@}
+\def\@listv{\leftmargin\leftmarginv \topsep\z@}
+\def\@listvi{\leftmargin\leftmarginvi \topsep\z@}
+
+\setlength{\leftmargini}{3mm}
+\setlength{\leftmarginii}{\z@}
+\setlength{\leftmarginiii}{\z@}
+\setlength{\leftmarginiv}{\z@}
+
+% Changes to the list parameters for enumerate
+\def\enumargs{%
+   \partopsep     \z@
+   \itemsep       3\p@
+   \parsep        \z@
+   \labelsep      0.5em
+   \listparindent \parindent
+   \itemindent    \z@
+   \topsep 11\p@
+}
+
+\def\enumerate{%
+    \@ifnextchar[{\@numerate}{\@numerate[0]}}
+
+\def\@numerate[#1]{%
+     \ifnum \@enumdepth >3 \@toodeep\else
+     \advance\@enumdepth \@ne
+     \edef\@enumctr{enum\romannumeral\the\@enumdepth}
+     \list{\csname label\@enumctr\endcsname}{%
+       \enumargs
+       \setlength{\leftmargin}{\csname leftmargin\romannumeral\the\@enumdepth\endcsname}
+       \usecounter{\@enumctr}
+       \settowidth\labelwidth{#1}
+       \addtolength{\leftmargin}{\labelwidth}
+       \addtolength{\leftmargin}{\labelsep}
+       \def\makelabel##1{\hss \llap{##1}}}%
+     \fi
+   }
+\let\endenumerate\endlist
+
+% Changes to the list parameters for itemize
+\def\itemargs{%
+   \partopsep     \z@
+   \itemsep       3\p@
+   \parsep        \z@
+   \labelsep      0.5em
+   \rightmargin   \z@
+   \listparindent \parindent
+   \itemindent    \z@
+   \topsep11\p@
+}
+
+\def\itemize{%
+    \@ifnextchar[{\@itemize}{\@itemize[$\bullet$]}}
+
+\def\@itemize[#1]{%
+     \ifnum \@itemdepth >3 \@toodeep\else
+     \advance\@itemdepth \@ne
+     \edef\@itemctr{item\romannumeral\the\@itemdepth}
+     \list{\csname label\@itemctr\endcsname}{%
+       \itemargs
+       \setlength{\leftmargin}{\csname leftmargin\romannumeral\the\@itemdepth\endcsname}
+       \settowidth\labelwidth{#1}
+       \addtolength{\leftmargin}{\labelwidth}
+       \addtolength{\leftmargin}{\labelsep}
+       \def\makelabel##1{\hss \llap{##1}}}%
+     \fi
+   }
+\let\enditemize\endlist
+
+\newenvironment{unlist}{%
+  \begin{list}{}%
+    {\setlength{\labelwidth}{\z@}%
+     \setlength{\labelsep}{\z@}%
+     \setlength{\topsep}{\medskipamount}%
+     \setlength{\itemsep}{3\p@}%
+     \setlength{\leftmargin}{2em}%
+     \setlength{\itemindent}{-2em}}}
+{\end{list}}
+
+      
+% ***********************
+% Quotes and Quotations *
+% ***********************
+\def\quotation{\par\begin{list}{}{
+      \setlength{\topsep}{\medskipamount}
+      \setlength{\leftmargin}{2em}%
+      \setlength{\rightmargin}{\z@}%
+      \setlength\labelwidth{0pt}%
+      \setlength\labelsep{0pt}%
+      \listparindent\parindent}%
+  \item[]}
+\def\endquotation{\end{list}}
+\let\quote\quotation
+\let\endquote\endquotation
+
+\skip\@mpfootins = \skip\footins
+\fboxsep=6\p@
+\fboxrule=1\p@

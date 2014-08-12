@@ -1,0 +1,488 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+
+%  $Id: RUnit.Rnw,v 1.22 2009/11/25 15:12:11 burgerm Exp $
+
+%\VignetteIndexEntry{Xmisc-ArgumentParser}
+%\VignettePackage{Xmisc}
+%\VignetteKeywords{command line options/arguments parser}
+%\VignetteEngine{utils::Sweave}
+
+%% http://CRAN.R-project.org/package=Xmisc
+
+
+%% ========================================================================
+%% 
+%% ========================================================================
+
+\documentclass{article}
+
+\usepackage{Xvignette}
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\newcommand{\Xmisc}{\software{Xmisc}}
+
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+
+\newcommand{\currversion}{%
+<<echo=FALSE,eval=TRUE,results=tex>>=%
+  cat(as.character(packageVersion('Xmisc')))
+@%
+}
+\newcommand{\currdate}{%
+<<echo=FALSE,eval=TRUE,results=tex>>=%
+  cat(unlist(strsplit(packageDescription('Xmisc')[['Date']],' '))[1])
+@%
+}
+
+
+
+%% ------------------------------------------------------------------------
+%% newcommand
+%% ------------------------------------------------------------------------
+
+
+%% ------------------------------------------------------------------------
+%% title
+%% ------------------------------------------------------------------------
+
+\title{
+  \code{Xmisc::ArgumentParser} (\currversion{})
+}
+
+\subtitle{
+  A Simple Command Line Argument Parser by \R{}
+}
+
+
+\author[1]{Xiaobei Zhao\thanks{\lccc\ \emailme{Xmisc}}}
+\affil[1]{Lineberger Comprehensive Cancer Center, University of North Carolina at Chapel Hill}
+\renewcommand\Authands{ and }
+
+
+
+%% \date{June 23, 2014}
+
+\date{
+Modified: \currdate \quad Compiled: \mydate{\today}
+}
+
+\def\aftertitle{
+  You may find the latest version of \Xmisc{} \cite{Zhao2014un-X} and this documentation at, \\
+  \url{http://CRAN.R-project.org/package=Xmisc}\\
+}
+
+
+
+%% ------------------------------------------------------------------------
+%% 
+%% ------------------------------------------------------------------------
+
+\pagestyle{fancy}
+
+\fancyhf{} %Clear Everything.
+\fancyfoot[C]{\thepage} %Page Number
+\fancyhead[LE,RO]{\zhao{}}
+\fancyhead[LO,RE]{\CRAN{} \Xmisc{}}
+
+
+%% ========================================================================
+%% document
+%% ========================================================================
+
+\begin{document}
+\thispagestyle{empty}
+
+
+%% ------------------------------------------------------------------------
+%% Overall Sweave and R options
+%% ------------------------------------------------------------------------
+\SweaveOpts{strip.white=true}
+\SweaveOpts{engine=R,keep.source=TRUE,eps=FALSE,pdf=TRUE}
+\SweaveOpts{prefix=TRUE,prefix.string=xmisc,include=TRUE} 
+\SweaveOpts{width=10,height=8}
+\setkeys{Gin}{width=0.75\linewidth}
+
+
+
+%% ------------------------------------------------------------------------
+%% title
+%% ------------------------------------------------------------------------
+
+
+\maketitle
+
+\aftertitle
+
+\keywords{command line options/arguments parser}
+
+\vspace{6ex}
+
+
+
+%% ------------------------------------------------------------------------
+%% tableofcontents
+%% ------------------------------------------------------------------------
+
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+
+
+%% ------------------------------------------------------------------------
+%% sections
+%% ------------------------------------------------------------------------
+
+
+\section{Introduction}
+
+This document illustrates the major functionality (\refface{Section} \ref{sec:functionality}) of the parser, \code{Xmisc::ArgumentParser}, and demonstrates it by a minimal example (\refface{Section} \ref{sec:minimalexample}).
+
+\subsection{Package installation}
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=FALSE,results=verbatim>>=
+  ## install Xmisc
+  install.packages("Xmisc")
+@ 
+\end{boxedminipage}
+
+
+\section[ArgumentParser]{\code{ArgumentParser}}
+\label{sec:functionality}
+\code{ArgumentParser}, an \R{} reference class, makes it easy to write user-friendly command-line interfaces. The class defines methods to add and parse arguments (\code{add_argument}), usgae (\code{add_usage}) and description (\code{add_description}). 
+
+\subsection[Create an instance  of ArgumentParser]{Create an instance  of \code{ArgumentParser}}
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+  require(Xmisc)
+  parser <- ArgumentParser$new()  
+@ 
+\end{boxedminipage}
+
+\subsection{Add arguments}
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+## add a character object
+  parser$add_argument(
+    '--a_name',type='character',
+    help='A a_name.'
+  )  
+## add an integer object with default
+  parser$add_argument(
+    '--a_int',type='integer',
+    default=1,    
+    help='A integer.'
+  )
+
+## add a numeric object with default
+  parser$add_argument(
+    '--a_num',type='numeric',
+    default=1,    
+    help='A number.'
+  )
+
+## add a logical object with default
+  parser$add_argument(
+    '--if.test',type='logical',
+    default=FALSE,
+    help='Whether it is a test?!'
+  )
+@ 
+\end{boxedminipage}
+
+\subsection{Add ``usage''}
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+  parser$add_usage('Xmisc-ArgumentParser.R [options]')
+@ 
+\end{boxedminipage}
+
+
+\subsection{Add ``description''}
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+  parser$add_description(
+    'An executable R script parsing arguments from Unix-like command line.')
+@ 
+\end{boxedminipage}
+
+
+\subsection{Add options to get the help page}
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+  parser$add_argument(
+    '--h',type='logical',
+    action='store_true',
+    help='Print the help page'
+  )
+
+  parser$add_argument(
+    '--help',type='logical',
+    action='store_true',
+    help='Print the help page'
+  )
+@ 
+\end{boxedminipage}
+
+
+\subsection{Review pasrsed arguments}
+Method \code{get_args} returns all variables defined by the parser, with either the default values or those passed from the command line.
+
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+  parser$get_args()
+@ 
+\end{boxedminipage}
+
+
+\subsection{Get help}
+Method \code{helpme} invokes a help page with -h or --help options.
+
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+  parser$helpme()
+@ 
+\end{boxedminipage}
+
+
+\section{A minimal example}
+\label{sec:minimalexample}
+An executable R script, \code{Xmisc-ArgumentParser.R} is provided at the \code{bin} subdirectory under the top level package directory. A complete source code of this executable is in Appendix \ref{app:executable} on page \pageref{app:executable}.
+ 
+\subsection{Get the path of the executable R script} %%XB
+Given the \Xmisc{} package is installed, we can obtain the path of the executable \R{} script at the \R{} prompt:
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=TRUE,results=verbatim>>=
+system.file('bin', 'Xmisc-ArgumentParser.R', package='Xmisc', mustWork=TRUE)
+
+## Or,
+Xmisc::get_executable('Xmisc','Xmisc-ArgumentParser.R')
+@
+\end{boxedminipage}
+
+
+Alternatively, we can extract this path at Unix-like command-line interface (CLI):
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+cmd=$(Rscript -e "cat(system.file('bin','Xmisc-ArgumentParser.R',package='Xmisc', mustWork=TRUE))")
+echo ${cmd}
+
+## Or,
+cmd=$(Rscript -e "cat(Xmisc::get_executable('Xmisc','Xmisc-ArgumentParser.R'))")
+echo ${cmd}
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+\subsection{Get help}
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+${cmd} -h 
+
+## Or,
+${cmd} --help
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+This will print the help page at the console,
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Soutput}
+
+Usage:
+    Xmisc-ArgumentParser.R [options]
+
+Description:
+    An executable R script parsing arguments from Unix-like command line
+.
+
+Options:
+    h       logical   Print the help page. [ NULL ]
+
+    help    logical   Print the help page. [ NULL ]
+
+    a_name  character A a_name. [ Xmisc ]
+
+    a_int   integer   A integer. [ 1 ]
+
+    a_num   numeric   A number. [ 1 ]
+
+    if.test logical   Whether it is a test?!. [ FALSE ]
+
+\end{Soutput}
+\end{Schunk}
+\end{boxedminipage}
+
+
+\subsection{Parsing command line arguments}
+Let's parse the command line arguments.
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+cmd=$(Rscript -e "cat(Xmisc::get_executable('Xmisc','Xmisc-ArgumentParser.R'))")
+
+${cmd} --a_name=${USER} --a_int=2 --a_num=3.6 --if.test=TRUE
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+This produces the output,
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+Hello, xiaobei!
+The integer is 2.
+The number is 3.6.
+
+(This is a test).
+
+class(a_name): character
+class(a_int): integer
+class(a_num): numeric
+class(if.test): logical
+
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+\subsubsection{Convert the passed values}
+Usually, the parser tries to convert the passed values to the proper type. For instance, it produces an \code{NA} when converting a character object to an integer.
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+cmd=$(Rscript -e "cat(Xmisc::get_executable('Xmisc','Xmisc-ArgumentParser.R'))")
+${cmd} --a_name=${USER} --a_int="an integer"
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+This produces the output,
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+Hello, xiaobei!
+The integer is NA.
+The number is 1.
+
+(This is not a test).
+
+class(a_name): character
+class(a_int): integer
+class(a_num): numeric
+class(if.test): logical
+
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+\subsubsection{Fail to convert the passed values}
+However, the parser fails in case it is unable to make such conversion. For instance, it fails to convert a character object to a logical.
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+cmd=$(Rscript -e "cat(Xmisc::get_executable('Xmisc','Xmisc-ArgumentParser.R'))")
+${cmd} --a_name=${USER} --if.test="a test"
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+This raises an error,
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+
+Error in withCallingHandlers(expr, warning = function(w) invokeRestart("muffleWarning")) :
+  ValueParser | invalid logical value
+Calls: main ... initialize -> initialize -> <Anonymous> -> R5.value.parse
+Execution halted
+
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+
+
+\subsubsection{Required variables}
+In the executable \R{} script (Appendix \ref{app:executable} on page \pageref{app:executable}), we have asked the variable \code{a_name} to be required.
+
+\begin{boxedminipage}{1\textwidth}
+<<echo=TRUE,eval=FALSE,results=verbatim>>=
+## add a required character object
+  parser$add_argument(
+    '--a_name',type='character',
+    required=TRUE, 
+    help='A a_name.'
+  )  
+@ 
+\end{boxedminipage}
+
+In case any of the required variables is not present, the parser issues an error.
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+cmd=$(Rscript -e "cat(Xmisc::get_executable('Xmisc','Xmisc-ArgumentParser.R'))")
+${cmd} --a_int=2 --a_num=3.6 --if.test=TRUE
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+The error,
+
+\begin{boxedminipage}{1\textwidth}
+\begin{Schunk}
+\begin{Sinput}
+Error in .add_argument(name, ..., type = type, default = default, required = required,  :
+  add_argument | argument (a_name) is required.
+Calls: main -> PARSEME -> <Anonymous> -> .add_argument
+Execution halted
+\end{Sinput}
+\end{Schunk}
+\end{boxedminipage}
+
+
+
+\newpage
+\appendix
+
+\begin{appendices}
+\label{app}
+
+\section{The source code}
+
+
+\newpage
+\subsection[The command-line executable R script]{The command-line executable \R{} script}
+\label{app:executable}
+\vignetteSource{R/Xmisc-ArgumentParser.R}{Xmisc-ArgumentParser.R}
+\clearpage
+
+\end{appendices}
+
+
+
+
+\clearpage
+\bibliographystyle{plain}
+\bibliography{Xmisc}
+
+
+\end{document}

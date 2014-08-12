@@ -20,8 +20,8 @@
 ##' @field type character
 ##' 
 ##' @examples
-##' ValueParser$new(value="",type='character')$getvalue()
-##' ValueParser$new(type='character')$getvalue()
+##' ValueParser$new(value="",type='character')$get_value()
+##' ValueParser$new(type='character')$get_value()
 ##' 
 ValueParser <- 
   setRefClass(
@@ -52,8 +52,8 @@ ValueParser <-
         .self$value <- R5.value.parse(.value,type)
         ## logme(.self$value,'ValueParser | initialize',log='DEBUG')
       },
-      getvalue=function(){
-        ## logme(.self$value,'ValueParser | getvalue',log='DEBUG')
+      get_value=function(){
+        ## logme(.self$value,'ValueParser | get_value',log='DEBUG')
         return(.self$value)
       }
       )

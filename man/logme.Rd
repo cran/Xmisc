@@ -25,7 +25,7 @@ logme(x1)
 
 ## log according to logger levels
 bar <- function(x,envir=sys.frame(sys.parent(0))){
-  for (.logger in get.loglevel()) {
+  for (.logger in get_loglevel()) {
     if (is.null(.logger)) .prefix <- 'NULL' else .prefix <- .logger
     logme(x,prefix=.prefix,logger=.logger,envir=envir)
   }

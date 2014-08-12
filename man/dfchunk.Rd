@@ -3,12 +3,16 @@
 \alias{dfchunk}
 \title{Chunk data.frame into parts}
 \usage{
-dfchunk(x, n)
+dfchunk(x, n, balance.size = TRUE, balance.order = FALSE)
 }
 \arguments{
 \item{x}{data.frame or matrix}
 
 \item{n}{numeric, the number of chunks}
+
+\item{balance.size}{logical, see \code{vchunk}}
+
+\item{balance.order}{logical, see \code{vchunk}}
 }
 \value{
 a list of data.frame
@@ -18,7 +22,8 @@ Chunk data.frame into parts
 }
 \examples{
 dfchunk(iris,n=5)
-dfchunk(iris[1:5,],n=5)
+dfchunk(iris[1:20,],n=3)
+dfchunk(iris[1:20,],n=3,balance.order=TRUE)
 }
 \author{
 Xiaobei Zhao

@@ -41,7 +41,7 @@
 ##' @title Define log levels
 ##' @return the defined loglevels
 ##' @author Xiaobei Zhao
-get.loglevel <- function(){
+get_loglevel <- function(){
   c('NULL','INFO', 'DEBUG', 'WARNING', 'ERROR', 'CRITICAL')
 }
 
@@ -55,7 +55,7 @@ get.loglevel <- function(){
 ##' @author Xiaobei Zhao
 is.loglevel <- function(
   x,
-  loglevels=get.loglevel()
+  loglevels=get_loglevel()
   )
 {
   x %in% loglevels
@@ -71,7 +71,7 @@ is.loglevel <- function(
 ##' @author Xiaobei Zhao
 as.loglevel <- function(
   x,
-  loglevels=get.loglevel()
+  loglevels=get_loglevel()
   )
 {
   if (is.null(x)){
@@ -268,4 +268,5 @@ valid.arg.index <-
   }
   return(ret)
 }
+
 

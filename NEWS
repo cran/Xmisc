@@ -1,4 +1,31 @@
 
+Xmisc Version 0.2.1 2014-08-12 10:21:03 EDT
+--- --- --- --- --- --- --- --- --- --- --- --- 
+    o improved `ArgumentParser'.
+    o improved `Argument'.
+    o improved `ValueParser'.
+    o added `tests/unittest.1.R'.
+    o improved `UnitTest'.
+
+
+Xmisc Version 0.2.0 2014-08-10 21:27:47 EDT
+--- --- --- --- --- --- --- --- --- --- --- --- 
+    o added `tests/xrefclass.1.R'.
+    o added `bin/Xmisc-ArgumentParser.R'.
+    o added `vignettes/Xmisc-ArgumentParser.Rnw'.
+    o added `ArgumentParser$print_help'.
+    o added `ArgumentParser$get_help'.
+    o Fixed `ArgumentParser$make_help'.
+    o added `func'.
+    o added `is.connection'.
+    o added `unittest.R'.
+    o added `get_executable'.
+    o improved `dfsplit'.
+    o improved `dfchunk'.
+    o improved `vchunk'.
+    o improved `vconcat'.
+    o improved `lprintf'.
+
 
 Xmisc Version 0.1.0 2014-08-04 15:09:08 EDT
 --- --- --- --- --- --- --- --- --- --- --- --- 

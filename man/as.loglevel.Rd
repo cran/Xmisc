@@ -3,7 +3,7 @@
 \alias{as.loglevel}
 \title{Coerces an object to loglevel}
 \usage{
-as.loglevel(x, loglevels = get.loglevel())
+as.loglevel(x, loglevels = get_loglevel())
 }
 \arguments{
 \item{x}{object}

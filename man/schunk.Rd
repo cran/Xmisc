@@ -3,7 +3,8 @@
 \alias{schunk}
 \title{Chunk a string into parts}
 \usage{
-schunk(x, size, brk = "-", concat = TRUE)
+schunk(x, size, brk = "-", indent.width1 = 0,
+  indent.width = indent.width1, concat = TRUE)
 }
 \arguments{
 \item{x}{character, a string to chunk.}
@@ -11,6 +12,10 @@ schunk(x, size, brk = "-", concat = TRUE)
 \item{size}{numeric, the size of a chunk.}
 
 \item{brk}{character to link broken words.}
+
+\item{indent.width1}{numeric, indent of the first line}
+
+\item{indent.width}{numeric, indent of the other lines}
 
 \item{concat}{logical, whether to concatenate by a `newline`}
 }
@@ -23,6 +28,8 @@ Chunk a string into parts
 \examples{
 x <- 'The quick brown fox jumps over the lazy dog.'
 cat(schunk(x,15),'\\n')
+cat(schunk(x,15,indent.width1=4),'\\n') # indent all lines
+cat(schunk(x,15,indent.width=4),'\\n')  # indent lines other than the first
 x <- 'The word, honorificabilitudinita, occurs in Shakespeare\\'s
 play Love\\'s Labour\\'s Lost, and means "with honorablenesses".'
 cat(schunk(x,30),'\\n')

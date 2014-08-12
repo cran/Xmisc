@@ -40,6 +40,7 @@ Extended Reference Class
 \item{\code{update(x)}}{Modify method definition without re-create the class instance. x: character, methods to be updated.}
 }}
 \examples{
+\dontrun{
 MyClass <-
   setRefClass(
     "MyClass",
@@ -107,6 +108,7 @@ obj$printme() # The function is yet not modified
 obj$update("printme") # update the function
 obj$printme() # The function is modified
 ## Hello R!
+}
 }
 \author{
 Xiaobei Zhao

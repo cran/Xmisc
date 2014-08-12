@@ -41,25 +41,30 @@ Argument <-
         callSuper(...,.index=.idx)
         ##logme(.envir,'Argument | initialize','DEBUG')
         .envir <<- globalenv()
-        setvalue()
+        set_value()
+        set_help()
         assignme()
       },
-      getname=function(){
+      get_name=function(){
         name
       },
-      getvalue=function(){
+      get_value=function(){
         value
       },
-      gettype=function(){
+      get_type=function(){
         type
       },
-      getdefault=function(){
+      get_default=function(){
         default
       },
-      gethelp=function(){
+      get_help=function(){
         help
       },
-      setvalue=function(){
+      set_help=function(){
+        help <<- gsub('\n',' ',help)
+        help <<- gsub(' +',' ',help)
+      },
+      set_value=function(){
         if (!length(type)){
           type <<- 'ANY'
         }
@@ -67,14 +72,14 @@ Argument <-
           ##logme("Argument | 1")
           if (class(default) == "uninitializedField" | !length(default)) {
             ##logme("Argument | 2")
-            value <<- ValueParser$new(type=type)$getvalue()
+            value <<- ValueParser$new(type=type)$get_value()
           } else {
             ##logme("Argument | 3")
-            value <<- ValueParser$new(default,type=type)$getvalue()
+            value <<- ValueParser$new(default,type=type)$get_value()
           }
         } else {
           ##logme("Argument | 4")
-          value <<- ValueParser$new(value,type=type)$getvalue()      
+          value <<- ValueParser$new(value,type=type)$get_value()      
         }
       },
       assignme=function(){
@@ -114,7 +119,7 @@ Argument <-
 ##' ## character(0)
 ##' b_num
 ##' ## [1] 0
-##' parser$make_help()
+##' message(parser$get_help())
 ##' ## Usage:
 ##' ##     /bin/exec/R ...
 ##' ## Description:
@@ -129,7 +134,7 @@ Argument <-
 ##' parser <- ArgumentParser\$new();
 ##' parser\$add_argument('--a_str',type='character');
 ##' parser\$add_argument('--b_num',type='numeric',default='0');
-##' printme(a_str);printme(b_num);parser\$make_help();
+##' printme(a_str);printme(b_num);parser\$get_help();
 ##' " --args --a_str='Hello World!' --b_num=1
 ##' ## Loading required package: Xmisc
 ##' ## ## a_str ##
@@ -151,7 +156,8 @@ ArgumentParser <-
       helps='list',
       #narg='numeric',
       usage='character',
-      description='character'
+      description='character',
+      helpdoc='character'
       ),
     contains='xRefClass',
     methods=list(
@@ -159,7 +165,7 @@ ArgumentParser <-
         ''
         callSuper(...)
         setme()
-        setcmdargs()
+        set_cmdargs()
       },
       setme=function(){
         ## logme(.envir,'ArgumentParser | initialize','DEBUG') ## 
@@ -168,22 +174,22 @@ ArgumentParser <-
           .envir <<- globalenv()
         }
       },
-      setcmdargs=function(){
-        .args <- .setcmdargs()
+      set_cmdargs=function(){
+        .args <- .set_cmdargs()
         exeargs <<- .args$exeargs
         cmdargs <<- .args$cmdargs        
       },
-      setenvir=function(x){
+      set_envir=function(x){
         .envir <<- as.environment(x)
         ## helps <<- list()
       },
-      getcmdargs=function(){
+      get_cmdargs=function(){
         cmdargs
       },
-      getargs=function(){
+      get_args=function(){
         args
       },
-      gethelps=function(){
+      get_helps=function(){
         helps
       },
       add_argument=function(
@@ -200,10 +206,10 @@ ArgumentParser <-
           action=action,
           cmdargs=cmdargs,envir=.envir
           )
-        args[[a.obj$getname()]] <<- a.obj$getvalue()
-        types[[a.obj$getname()]] <<- a.obj$gettype()
-        defaults[[a.obj$getname()]] <<- a.obj$getdefault()
-        helps[[a.obj$getname()]] <<- a.obj$gethelp()
+        args[[a.obj$get_name()]] <<- a.obj$get_value()
+        types[[a.obj$get_name()]] <<- a.obj$get_type()
+        defaults[[a.obj$get_name()]] <<- a.obj$get_default()
+        helps[[a.obj$get_name()]] <<- a.obj$get_help()
         invisible()
       },
       add_usage=function(x){
@@ -222,9 +228,23 @@ ArgumentParser <-
         if(!length(description)){
           description <<- ''
         }
-        ret <- .make_help(exeargs,args,types,defaults,helps,usage,description)
-        cat(ret)
-        invisible(ret)
+        helpdoc <<- .make_help(exeargs,args,types,defaults,helps,usage,description)
+        invisible()
+      },
+      get_help=function(){
+        if (!length(helpdoc)){
+          make_help()
+        }
+        helpdoc
+      },
+      print_help=function(){
+        message(get_help())
+      },
+      helpme=function(){
+        if (identical(args$h,TRUE) | identical(args$help,TRUE)){
+          print_help()
+          quit("no")
+        }
       }
       )
     )
@@ -235,7 +255,7 @@ ArgumentParser <-
 ## 
 ## ------------------------------------------------------------------------
 
-## .setcmdargs.v1 <- function(trailingOnly=TRUE){
+## .set_cmdargs.v1 <- function(trailingOnly=TRUE){
 ##   .cmdargs <- base::commandArgs(trailingOnly=trailingOnly)
 ##   ## logme(.cmdargs)
 ##   res <- list()
@@ -252,18 +272,18 @@ ArgumentParser <-
 
 
 
-##' .setcmdargs
+##' .set_cmdargs
 ##'
 ##' 
-##' @title .setcmdargs
+##' @title .set_cmdargs
 ##' @return list
 ##' @author Xiaobei Zhao
 ##' @examples
 ##' R --args -a 1 -b 2 -T --myvar="apple" myvar2="orange"
-##' .setcmdargs()
+##' .set_cmdargs()
 ##' R --args -a 1 -b 2 -T --myvar="apple" -T2
-##' .setcmdargs()
-.setcmdargs <- function()
+##' .set_cmdargs()
+.set_cmdargs <- function()
 {
   .cmdargs0 <- base::commandArgs(trailingOnly=FALSE)
   .which <- which(.cmdargs0=='--args')
@@ -354,7 +374,7 @@ ArgumentParser <-
 ##   }
 ##   ##logme(envir,"ArgumentParser | add_argument",'DEBUG')
 ##   a.obj <- Argument$new(name=name,value=value,type=type,default=default,envir=envir)
-##   args[[a.obj$getname()]] <- a.obj$getvalue() ## <<-
+##   args[[a.obj$get_name()]] <- a.obj$get_value() ## <<-
 ##   ## invisible()
 ##   args
 ## }
@@ -380,13 +400,13 @@ ArgumentParser <-
 ##' @examples
 ##' 
 ##' R --args -a 1 -b 2 -T --myvar="apple" -T2
-##' .setcmdargs()
+##' .set_cmdargs()
 ##' 
 ##' .envir <- new.env()
-##' .add_argument('-a',type='character',dest='a_char',cmdargs=.setcmdargs()$cmdargs,envir=.envir)
-##' try(.add_argument('-a','--myvar',type='character',dest='a_var',cmdargs=.setcmdargs()$cmdargs,envir=.envir))
-##' .add_argument('-a',type='integer',dest='a_int',cmdargs=.setcmdargs()$cmdargs,envir=.envir)
-##' .add_argument('-s',type='numeric',default='99',dest='a_num',cmdargs=.setcmdargs()$cmdargs,envir=.envir)
+##' .add_argument('-a',type='character',dest='a_char',cmdargs=.set_cmdargs()$cmdargs,envir=.envir)
+##' try(.add_argument('-a','--myvar',type='character',dest='a_var',cmdargs=.set_cmdargs()$cmdargs,envir=.envir))
+##' .add_argument('-a',type='integer',dest='a_int',cmdargs=.set_cmdargs()$cmdargs,envir=.envir)
+##' .add_argument('-s',type='numeric',default='99',dest='a_num',cmdargs=.set_cmdargs()$cmdargs,envir=.envir)
 ##' as.list(.envir)
 ##' 
 .add_argument <- function(
@@ -474,13 +494,16 @@ ArgumentParser <-
     schunk(description,size=tot.width-indent.width),sep='',collapse='\n'
     )
   ## help
-  help.col.width <- tot.width-sum(c(indent.width,1,max(nchar(tmp[,"name"])),1,max(nchar(tmp[,"type"]))))
+  help.col.indent <- sum(c(indent.width,1,max(nchar(tmp[,"name"])),1,max(nchar(tmp[,"type"]))))
+  help.col.width <- tot.width-help.col.indent
   tmp[,"help"] <- rstrip(tmp[,"help"],'.|;')
-  tmp[,"help"] <- sapply(sapply(tmp[,"help"],schunk,size=help.col.width),paste,sep='',collapse=paste('\n',format("",width=tot.width-help.col.width),sep=''))
+  tmp[,"help"] <- sapply(sapply(tmp[,"help"],schunk,size=help.col.width,indent.width=help.col.indent),paste,sep='',collapse=paste('\n',format("",width=tot.width-help.col.width),sep=''))
   tmp[,"help"] <- sapply(tmp[,"help"],function(e) ifelse(!length(e) | ''==e,"",sprintf('%s. ',e))) ##XB    
-  tmp[,"default"] <- sapply(tmp[,"default"],function(e) ifelse(!length(e) | '__uninitializedField__'==e,"",sprintf('[ %s ]',e)))
+  tmp[,"default"] <- sapply(tmp[,"default"],function(e) ifelse(!length(e) | '__uninitializedField__'==e,"[ NULL ]",sprintf('[ %s ]',e))) ##XB
   ## desc
   tmp <- cbind(tmp,desc=paste(tmp[,"help"],tmp[,"default"],sep=''))
+  tmp[,"desc"] <- rstrip(tmp[,"desc"],'\n')
+  tmp[,"desc"] <- paste(tmp[,"desc"],'\n',sep='')
   tmp <- cbind(tmp,prefix=format('',width=indent.width-1))
 
   ret <- ''

@@ -3,7 +3,7 @@
 \alias{is.loglevel}
 \title{General test of an object being interpretable as loglevel}
 \usage{
-is.loglevel(x, loglevels = get.loglevel())
+is.loglevel(x, loglevels = get_loglevel())
 }
 \arguments{
 \item{x}{object}

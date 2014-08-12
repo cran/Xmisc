@@ -15,8 +15,8 @@ Parser for values
 \item{\code{type}}{character}
 }}
 \examples{
-ValueParser$new(value="",type='character')$getvalue()
-ValueParser$new(type='character')$getvalue()
+ValueParser$new(value="",type='character')$get_value()
+ValueParser$new(type='character')$get_value()
 }
 \author{
 Xiaobei Zhao

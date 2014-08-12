@@ -3,7 +3,8 @@
 \alias{vchunk}
 \title{Chunk a vector into parts}
 \usage{
-vchunk(x, n = NULL, max.size = NULL, aeap = TRUE)
+vchunk(x, n = NULL, max.size = NULL, balance.size = TRUE,
+  balance.order = FALSE)
 }
 \arguments{
 \item{x}{vector to chunk}
@@ -12,7 +13,11 @@ vchunk(x, n = NULL, max.size = NULL, aeap = TRUE)
 
 \item{max.size}{numeric, the maximal size of a chunk}
 
-\item{aeap}{logical, as equal as possible. Whether return balanced chunks.}
+\item{balance.size}{logical, as equal as possible. Whether return balanced chunks.}
+
+\item{balance.order}{logical, whether to balance the elements.
+Force balance.size to be TRUE.
+given their original orders.}
 }
 \value{
 list
@@ -24,8 +29,10 @@ or the max size of a chunk
 \examples{
 vchunk(1:7,7)
 vchunk(1:19,n=3)
-vchunk(1:19,max.size=9)
-vchunk(1:19,max.size=9,aeap=FALSE) # unbalanced chunks
+vchunk(1:19,max.size=9) # size-balanced
+vchunk(1:19,max.size=9,balance.size=FALSE) # size/order-unbalanced
+vchunk(1:19,max.size=9,balance.size=FALSE,balance.order=TRUE) # order-balanced
+vchunk(1:19,max.size=9,balance.order=TRUE) # size/order-balanced
 }
 \author{
 Xiaobei Zhao

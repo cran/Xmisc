@@ -48,7 +48,7 @@ a_str
 ## character(0)
 b_num
 ## [1] 0
-parser$make_help()
+message(parser$get_help())
 ## Usage:
 ##     /bin/exec/R ...
 ## Description:
@@ -63,7 +63,7 @@ require(methods);require(Xmisc);
 parser <- ArgumentParser\\$new();
 parser\\$add_argument('--a_str',type='character');
 parser\\$add_argument('--b_num',type='numeric',default='0');
-printme(a_str);printme(b_num);parser\\$make_help();
+printme(a_str);printme(b_num);parser\\$get_help();
 " --args --a_str='Hello World!' --b_num=1
 ## Loading required package: Xmisc
 ## ## a_str ##

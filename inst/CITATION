@@ -8,13 +8,14 @@ citEntry(
     ),
   year = "2014",
   url = "http://CRAN.R-project.org/package=Xmisc",
-  note = "R package version 0.1.0",
-  textVersion = paste("
- @Manual{,
- title = {Xmisc: Xiaobei's miscellaneous classes and functions},
- author = {Xiaobei Zhao},
- year = {2014},
- note = {R package version 0.1.0},
- url = {http://CRAN.R-project.org/package=Xmisc},
- }"),
+  note = "R package version 0.2.1",
+  textVersion=
+  paste(
+    "Zhao, Xiaobei",
+    "Xmisc: Xiaobei's miscellaneous classes and functions", 
+    "R package version 0.2.1",
+    "2014",
+    "http://CRAN.R-project.org/package=Xmisc",
+    sep=". "
+    ),
   )
